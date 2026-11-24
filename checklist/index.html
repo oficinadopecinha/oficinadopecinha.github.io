@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist de Montagem · Oficina do Pecinha</title>
+<meta name="description" content="Checklist interativo para montar o seu PC passo a passo, do canal Oficina do Pecinha. Grátis, funciona no navegador e dá para imprimir.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fundo: #0B0E14;
+    --fundo2: #18202E;
+    --cartao: #131924;
+    --borda: #263042;
+    --laranja: #FF6B00;
+    --laranja-claro: #FF8A33;
+    --texto: #E9EDF2;
+    --suave: #8D99A7;
+    --ok: #3BB273;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(ellipse at 50% 0%, var(--fundo2) 0%, var(--fundo) 60%) fixed, var(--fundo);
+    color: var(--texto);
+    line-height: 1.5;
+  }
+  .pagina { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  header svg { flex-shrink: 0; }
+  .marca { font-weight: 800; letter-spacing: 2px; font-size: 14px; color: var(--suave); }
+  .marca b { color: var(--laranja); }
+  h1 { margin: 2px 0 0; font-size: clamp(26px, 5vw, 38px); line-height: 1.1; font-weight: 800; }
+  .intro { color: var(--suave); margin: 12px 0 24px; }
+
+  .config {
+    background: var(--cartao); border: 1px solid var(--borda); border-radius: 14px;
+    padding: 18px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .config h2 { grid-column: 1 / -1; margin: 0; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; color: var(--laranja); }
+  .campo label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .opcoes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .opcoes button {
+    font: inherit; font-size: 14px; font-weight: 600; color: var(--texto); background: transparent;
+    border: 1.5px solid var(--borda); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+  }
+  .opcoes button[aria-pressed="true"] { border-color: var(--laranja); background: rgba(255,107,0,0.14); color: #fff; }
+  .opcoes button:focus-visible, .acoes button:focus-visible, summary:focus-visible { outline: 2px solid var(--laranja-claro); outline-offset: 2px; }
+
+  .progresso {
+    position: sticky; top: 0; z-index: 5; margin: 20px -16px 8px; padding: 12px 16px;
+    background: rgba(11,14,20,0.92); backdrop-filter: blur(6px); border-bottom: 1px solid var(--borda);
+  }
+  .progresso .linha { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .barra { height: 8px; background: #222b3a; border-radius: 4px; overflow: hidden; }
+  .barra div { height: 100%; width: 0; background: var(--laranja); transition: width .3s; }
+  .progresso.completo .barra div { background: var(--ok); }
+
+  section { margin-top: 26px; }
+  section h2 { font-size: 20px; margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; }
+  section h2 .num { color: var(--laranja); font-size: 15px; letter-spacing: 1px; }
+  section h2 .conta { margin-left: auto; font-size: 13px; color: var(--suave); font-weight: 600; }
+  section > p { margin: 0 0 10px; color: var(--suave); font-size: 14px; }
+
+  .item {
+    background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px;
+    margin-bottom: 8px; padding: 12px 14px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
+  }
+  .item.alerta { border-left: 4px solid var(--laranja); }
+  .item input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--laranja); cursor: pointer; }
+  .item label { font-weight: 600; cursor: pointer; }
+  .item.feito label { color: var(--suave); text-decoration: line-through; text-decoration-color: rgba(141,153,167,0.6); }
+  .item details { grid-column: 2; font-size: 14px; color: var(--suave); }
+  .item summary { cursor: pointer; color: var(--laranja-claro); font-weight: 600; font-size: 13px; width: fit-content; }
+  .item details p { margin: 6px 0 0; }
+
+  .acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .acoes button {
+    font: inherit; font-weight: 700; font-size: 15px; border-radius: 10px; padding: 10px 16px; cursor: pointer;
+    border: 1.5px solid var(--borda); background: var(--cartao); color: var(--texto);
+  }
+  .acoes button.principal { background: var(--laranja); border-color: var(--laranja); color: #111; }
+
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--borda); color: var(--suave); font-size: 13px; }
+  footer a { color: var(--laranja-claro); }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .config, .progresso, .acoes, .item summary { display: none !important; }
+    .item { background: #fff; border-color: #bbb; break-inside: avoid; }
+    .item details { display: block; }
+    .item details[open] p, .item details p { display: block; color: #444; }
+    .item.feito label { color: #111; text-decoration: none; }
+    .item input { accent-color: #111; }
+    section h2 .num, .marca b { color: #111; }
+    footer { color: #444; }
+  }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <header>
+    <!-- Símbolo do canal: cubo com a peça laranja chegando -->
+    <svg width="64" height="64" viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <mask id="p" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+          <rect width="100" height="100" fill="#fff"/>
+          <path d="M0.30,0.20 H0.56 A0.19,0.19 0 0 1 0.56,0.58 H0.46 V0.84 H0.30 Z M0.46,0.32 H0.55 A0.07,0.07 0 0 1 0.55,0.46 H0.46 Z" transform="matrix(24.2,14,0,28,20.3,41.5)" fill="#000" fill-rule="evenodd"/>
+        </mask>
+      </defs>
+      <polygon points="20.3,41.5 44.5,55.5 44.5,83.5 20.3,69.5" fill="#E9EDF2" stroke="#E9EDF2" stroke-width="4" stroke-linejoin="round" mask="url(#p)"/>
+      <polygon points="55.5,55.5 79.7,41.5 79.7,69.5 55.5,83.5" fill="#8D99A7" stroke="#8D99A7" stroke-width="4" stroke-linejoin="round"/>
+      <g transform="rotate(-9 50 25)"><polygon points="50,11 74.2,25 50,39 25.8,25" fill="#FF6B00" stroke="#FF6B00" stroke-width="4" stroke-linejoin="round"/></g>
+      <g stroke="#FF6B00" stroke-width="2.6" stroke-linecap="round" opacity="0.75"><line x1="33" y1="6" x2="33" y2="13"/><line x1="50" y1="1.5" x2="50" y2="9"/><line x1="67" y1="6" x2="67" y2="13"/></g>
+    </svg>
+    <div>
+      <div class="marca">OFICINA DO <b>PECINHA</b></div>
+      <h1>Checklist de montagem de PC</h1>
+    </div>
+  </header>
+  <p class="intro">Marque cada etapa enquanto monta. Escolha abaixo como é o seu PC e a lista se ajusta. O progresso fica salvo neste navegador, e dá para imprimir.</p>
+
+  <div class="config" role="group" aria-label="Como é o seu PC">
+    <h2>Como é o seu PC?</h2>
+    <div class="campo">
+      <label id="l-soquete">Processador (soquete)</label>
+      <div class="opcoes" data-campo="soquete" aria-labelledby="l-soquete">
+        <button type="button" data-valor="am4">AMD AM4</button>
+        <button type="button" data-valor="am5">AMD AM5</button>
+        <button type="button" data-valor="intel">Intel</button>
+      </div>
+    </div>
+    <div class="campo">
+      <label id="l-cooler">Cooler</label>
+      <div class="opcoes" data-campo="cooler" aria-labelledby="l-cooler">
+        <button type="button" data-valor="box">O da caixa</button>
+        <button type="button" data-valor="torre">Torre (ar)</button>
+        <button type="button" data-valor="water">Water cooler</button>
+      </div>
+    </div>
+    <div class="campo">
+      <label id="l-gpu">Placa de vídeo</label>
+      <div class="opcoes" data-campo="gpu" aria-labelledby="l-gpu">
+        <button type="button" data-valor="sim">Tenho placa de vídeo</button>
+        <button type="button" data-valor="nao">Vídeo do processador</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="progresso" id="progresso" aria-live="polite">
+    <div class="linha"><span id="progresso-texto">0 de 0 etapas</span><span id="progresso-pct">0%</span></div>
+    <div class="barra"><div id="progresso-barra"></div></div>
+  </div>
+
+  <main id="lista"></main>
+
+  <div class="acoes">
+    <button type="button" class="principal" id="imprimir">Imprimir checklist</button>
+    <button type="button" id="limpar">Desmarcar tudo</button>
+  </div>
+
+  <footer>
+    <p>Feito pelo canal <strong>Oficina do Pecinha</strong> no YouTube: montagens animadas, peça por peça. <a href="../">Ver as peças e os preços</a>.</p>
+    <p>Conteúdo informativo. Cada placa-mãe, gabinete e fonte tem detalhes próprios: na dúvida, siga sempre o manual do fabricante.</p>
+  </footer>
+</div>
+
+<script>
+// Cada item: id único, texto, "porque" (explicação), quando (condição pela configuração) e alerta (destaque).
+const SECOES = [
+  { titulo: "Antes de comprar", texto: "Evita a peça que não encaixa ou o PC que liga sem imagem.", itens: [
+    { id: "c-soquete", texto: "Processador e placa-mãe usam o mesmo soquete e chipset compatível", porque: "Confira na página da placa-mãe, na lista de processadores suportados." },
+    { id: "c-bios", texto: "A placa-mãe aceita o processador com a BIOS que vem de fábrica", alerta: true, porque: "Placas mais antigas podem precisar de atualização de BIOS para reconhecer processadores mais novos. Veja na lista de suporte a versão mínima de BIOS e se a placa atualiza por pen drive sem processador." },
+    { id: "c-ram", texto: "A memória é do tipo certo para a placa (DDR4 ou DDR5)", porque: "DDR4 e DDR5 têm encaixes diferentes: uma não entra no lugar da outra." },
+    { id: "c-gpu-tamanho", texto: "A placa de vídeo cabe no gabinete (comprimento)", quando: c => c.gpu === "sim", porque: "Compare o comprimento da placa com o espaço máximo informado pelo gabinete." },
+    { id: "c-cooler-altura", texto: "O cooler cabe no gabinete (altura) e é compatível com o soquete", quando: c => c.cooler === "torre", porque: "O gabinete informa a altura máxima de cooler; o cooler informa os soquetes suportados." },
+    { id: "c-radiador", texto: "O gabinete tem espaço para o radiador do water cooler", quando: c => c.cooler === "water", porque: "Confira o tamanho do radiador (ex.: 240 ou 360 mm) e onde ele pode ser instalado." },
+    { id: "c-fonte", texto: "A fonte tem potência com folga e os cabos que a placa de vídeo pede", quando: c => c.gpu === "sim", porque: "Veja a fonte recomendada pelo fabricante da placa de vídeo e o tipo de conector (8 pinos, 2 x 8 pinos ou 12V-2x6)." },
+    { id: "c-fonte-sem-gpu", texto: "A fonte é de boa qualidade e tem os conectores da placa-mãe", quando: c => c.gpu === "nao", porque: "Mesmo sem placa de vídeo, fonte ruim é risco para o PC inteiro." },
+  ]},
+  { titulo: "Antes de começar", texto: "Cinco minutos aqui poupam muita dor de cabeça.", itens: [
+    { id: "a-ferramentas", texto: "Chave Phillips, abraçadeiras e uma superfície limpa e bem iluminada", porque: "Uma chave magnética ajuda a não perder parafuso dentro do gabinete." },
+    { id: "a-tomada", texto: "Fonte fora da tomada", alerta: true, porque: "Monte sempre com tudo desligado." },
+    { id: "a-estatica", texto: "Descarregue a eletricidade estática antes de tocar nas peças", porque: "Toque em uma superfície metálica e evite montar sobre tapete." },
+    { id: "a-manual", texto: "Manual da placa-mãe por perto (impresso ou no celular)", porque: "É nele que estão os slots certos da memória e os pinos do painel frontal." },
+  ]},
+  { titulo: "Placa-mãe fora do gabinete", texto: "Apoie a placa sobre a própria caixa: fica bem mais fácil.", itens: [
+    { id: "p-cpu-am4", texto: "Processador: levante a alavanca, alinhe o triângulo e encaixe sem forçar", quando: c => c.soquete === "am4", alerta: true, porque: "No AM4 os pinos ficam no processador: cuidado para não entortar. Ele cai sozinho no lugar quando está alinhado." },
+    { id: "p-cpu-lga", texto: "Processador: abra a tampa do soquete, alinhe o triângulo e as marcações e assente sem forçar", quando: c => c.soquete !== "am4", alerta: true, porque: "No AM5 e na Intel os pinos ficam no soquete da placa: não encoste neles e não deixe o processador escorregar." },
+    { id: "p-ram", texto: "Memória nos slots indicados pelo manual, com as travas fechando sozinhas", porque: "Com 2 pentes, geralmente vão no 2º e no 4º slot a partir do processador (confira no manual). Alinhe o recorte do pente com o do slot." },
+    { id: "p-ssd", texto: "SSD M.2 inclinado no slot, abaixado e preso com o parafuso ou a trava", porque: "Se o slot tiver dissipador com pad térmico, tire a película plástica do pad antes de fechar." },
+    { id: "p-cooler-box", texto: "Cooler da caixa: a pasta térmica já vem aplicada; prenda e ligue o cabo no CPU_FAN", quando: c => c.cooler === "box", porque: "Não precisa de pasta extra. Aperte os parafusos em X, um pouco de cada vez." },
+    { id: "p-cooler-torre", texto: "Cooler torre: suporte do soquete, pasta térmica, tire o plástico da base e ligue no CPU_FAN", quando: c => c.cooler === "torre", alerta: true, porque: "Esquecer o plástico da base do cooler é um erro clássico: o processador esquenta muito." },
+    { id: "p-water", texto: "Water cooler: suporte do soquete pronto e plástico da base retirado (o radiador vai no gabinete)", quando: c => c.cooler === "water", porque: "A bomba costuma ligar no CPU_FAN ou no conector AIO_PUMP, conforme o manual." },
+  ]},
+  { titulo: "Gabinete", texto: "Agora a placa vai para dentro.", itens: [
+    { id: "g-espacadores", texto: "Espaçadores do gabinete batendo com os furos da placa-mãe", alerta: true, porque: "Espaçador sobrando onde a placa não tem furo pode encostar no circuito." },
+    { id: "g-espelho", texto: "Espelho traseiro (I/O) encaixado, se ele não vier preso na placa", porque: "Ele precisa entrar antes da placa-mãe." },
+    { id: "g-placa", texto: "Placa-mãe parafusada em todos os furos, sem forçar", porque: "Aperte de leve: aperto demais pode danificar a placa." },
+    { id: "g-fonte", texto: "Fonte no lugar, com a ventoinha virada para a entrada de ar", porque: "Se o gabinete tem filtro embaixo, a ventoinha da fonte fica virada para baixo." },
+    { id: "g-radiador", texto: "Radiador do water cooler instalado e mangueiras sem dobra", quando: c => c.cooler === "water", porque: "Siga o manual do water cooler para a posição recomendada." },
+  ]},
+  { titulo: "Placa de vídeo", texto: "A peça mais pesada do PC.", quando: c => c.gpu === "sim", itens: [
+    { id: "v-tampas", texto: "Tampas dos slots retiradas na traseira do gabinete", porque: "Normalmente são duas para uma placa de vídeo comum." },
+    { id: "v-encaixe", texto: "Placa no slot PCIe x16 de cima até ouvir o clique, e parafusada", porque: "O slot mais perto do processador costuma ser o mais rápido." },
+    { id: "v-energia", texto: "Cabo de energia da placa de vídeo encaixado até o fim", alerta: true, porque: "Com conector 12V-2x6, confira se entrou totalmente, sem folga. Encaixe parcial pode esquentar o conector." },
+  ]},
+  { titulo: "Cabos", texto: "Um de cada vez, sem pressa.", itens: [
+    { id: "k-24", texto: "Cabo de 24 pinos da placa-mãe", porque: "O maior conector da fonte. Encaixe até a trava fazer clique." },
+    { id: "k-cpu", texto: "Cabo de 8 pinos do processador (no alto da placa)", alerta: true, porque: "Sem ele o PC não liga ou desliga em seguida." },
+    { id: "k-painel", texto: "Painel frontal (botão liga, LED), USB e áudio da frente", porque: "Os pinos do painel frontal estão no manual: siga o desenho." },
+    { id: "k-fans", texto: "Ventoinhas do gabinete ligadas na placa ou no hub", porque: "Confira se todas aparecem girando no primeiro boot." },
+    { id: "k-organizar", texto: "Cabos organizados por trás da bandeja com abraçadeiras", porque: "Melhora o fluxo de ar e facilita a manutenção." },
+  ]},
+  { titulo: "Primeiro boot", texto: "A hora da verdade.", itens: [
+    { id: "b-monitor-gpu", texto: "Monitor ligado na placa de vídeo, não na placa-mãe", quando: c => c.gpu === "sim", alerta: true, porque: "Com placa de vídeo, a imagem sai por ela. Muitos processadores nem têm vídeo integrado." },
+    { id: "b-monitor-igpu", texto: "Monitor ligado na saída de vídeo da placa-mãe", quando: c => c.gpu === "nao", porque: "Sem placa de vídeo, a imagem sai pela placa-mãe (processador com vídeo integrado)." },
+    { id: "b-am5", texto: "Primeira ligação demorando? Espere: é o treino da memória", quando: c => c.soquete === "am5", porque: "No AM5 o primeiro boot pode levar alguns minutos com a tela preta. Não desligue no meio." },
+    { id: "b-bios", texto: "Entre na BIOS (Delete ou F2) e confira se processador, memória e SSD aparecem", porque: "Se não der imagem, revise os cabos, a memória e a versão da BIOS." },
+    { id: "b-xmp", texto: "Ative o perfil da memória (XMP, EXPO ou DOCP)", porque: "Sem isso, a memória roda abaixo da velocidade anunciada." },
+    { id: "b-rebar", texto: "Ative o Resizable BAR, se a placa de vídeo pedir", quando: c => c.gpu === "sim", porque: "Algumas placas de vídeo perdem bastante desempenho sem ele." },
+    { id: "b-temp", texto: "Confira a temperatura do processador na BIOS", porque: "Temperatura alta parada indica cooler mal encaixado ou plástico esquecido." },
+  ]},
+  { titulo: "Depois de ligar", texto: "Deixe tudo em dia.", itens: [
+    { id: "d-windows", texto: "Sistema instalado e atualizado" },
+    { id: "d-drivers", texto: "Drivers da placa-mãe (chipset) e da placa de vídeo instalados", porque: "Baixe sempre do site oficial do fabricante." },
+    { id: "d-teste", texto: "Teste com um jogo ou programa pesado e observe as temperaturas" },
+  ]},
+];
+
+const CHAVE = "pecaporpeca-checklist-v1";
+const PADRAO = { config: { soquete: "am4", cooler: "box", gpu: "sim" }, feitos: {} };
+
+const carregar = () => {
+  try {
+    const salvo = JSON.parse(localStorage.getItem(CHAVE));
+    if (salvo && salvo.config) return { config: { ...PADRAO.config, ...salvo.config }, feitos: salvo.feitos || {} };
+  } catch (e) { /* sem armazenamento: segue com o padrão */ }
+  return JSON.parse(JSON.stringify(PADRAO));
+};
+const estado = carregar();
+const salvar = () => { try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) { /* ignora */ } };
+
+const lista = document.getElementById("lista");
+
+function desenhar() {
+  const c = estado.config;
+  lista.innerHTML = "";
+  let n = 0;
+  SECOES.filter(s => !s.quando || s.quando(c)).forEach(s => {
+    const itens = s.itens.filter(i => !i.quando || i.quando(c));
+    n++;
+    const sec = document.createElement("section");
+    const h = document.createElement("h2");
+    h.innerHTML = `<span class="num">${String(n).padStart(2, "0")}</span><span></span><span class="conta"></span>`;
+    h.children[1].textContent = s.titulo;
+    sec.appendChild(h);
+    if (s.texto) { const p = document.createElement("p"); p.textContent = s.texto; sec.appendChild(p); }
+    itens.forEach(i => {
+      const div = document.createElement("div");
+      div.className = "item" + (i.alerta ? " alerta" : "") + (estado.feitos[i.id] ? " feito" : "");
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.id = i.id; cb.checked = !!estado.feitos[i.id];
+      cb.addEventListener("change", () => {
+        if (cb.checked) estado.feitos[i.id] = true; else delete estado.feitos[i.id];
+        div.classList.toggle("feito", cb.checked);
+        salvar(); atualizar();
+      });
+      const lb = document.createElement("label");
+      lb.htmlFor = i.id; lb.textContent = i.texto;
+      div.append(cb, lb);
+      if (i.porque) {
+        const d = document.createElement("details");
+        const sm = document.createElement("summary"); sm.textContent = "Por quê?";
+        const p = document.createElement("p"); p.textContent = i.porque;
+        d.append(sm, p); div.appendChild(d);
+      }
+      sec.appendChild(div);
+    });
+    sec.dataset.ids = itens.map(i => i.id).join(",");
+    lista.appendChild(sec);
+  });
+  atualizar();
+}
+
+function atualizar() {
+  let total = 0, feitos = 0;
+  lista.querySelectorAll("section").forEach(sec => {
+    const ids = sec.dataset.ids ? sec.dataset.ids.split(",") : [];
+    const f = ids.filter(id => estado.feitos[id]).length;
+    total += ids.length; feitos += f;
+    sec.querySelector(".conta").textContent = `${f}/${ids.length}`;
+  });
+  const pct = total ? Math.round((feitos / total) * 100) : 0;
+  document.getElementById("progresso-texto").textContent = pct === 100 ? "Tudo pronto! Bom jogo 🎉" : `${feitos} de ${total} etapas`;
+  document.getElementById("progresso-pct").textContent = pct + "%";
+  document.getElementById("progresso-barra").style.width = pct + "%";
+  document.getElementById("progresso").classList.toggle("completo", pct === 100);
+}
+
+document.querySelectorAll(".opcoes").forEach(grupo => {
+  const campo = grupo.dataset.campo;
+  const marcar = () => grupo.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.valor === estado.config[campo])));
+  grupo.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    estado.config[campo] = b.dataset.valor; marcar(); salvar(); desenhar();
+  }));
+  marcar();
+});
+
+document.getElementById("imprimir").addEventListener("click", () => window.print());
+document.getElementById("limpar").addEventListener("click", () => { estado.feitos = {}; salvar(); desenhar(); });
+
+desenhar();
+</script>
+</body>
+</html>
